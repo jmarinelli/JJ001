@@ -23,8 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "usbd_customhid.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,8 +42,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE END PV */
 
@@ -91,88 +87,17 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  APP_Init();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t pinState;
-
-  uint8_t fA;
-  uint8_t fB;
-  uint8_t fC;
-  uint8_t fD;
-  uint8_t fPB;
-
-  uint8_t fEC1;
-  uint8_t fEC2;
-
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, 1);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, 1);
-
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 0);
-	GPIO_InitStruct.Pin = GPIO_PIN_11;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-
-	pinState = !HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6);
-
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 1);
-	GPIO_InitStruct.Pin = GPIO_PIN_11;
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-	asm("NOP");
-
-	fA = !HAL_GPIO_ReadPin(FUNKY_A_GPIO_Port, FUNKY_A_Pin);
-	fB = !HAL_GPIO_ReadPin(FUNKY_B_GPIO_Port, FUNKY_B_Pin);
-	fC = !HAL_GPIO_ReadPin(FUNKY_C_GPIO_Port, FUNKY_C_Pin);
-	fD = !HAL_GPIO_ReadPin(FUNKY_D_GPIO_Port, FUNKY_D_Pin);
-	fPB = !HAL_GPIO_ReadPin(FUNKY_PB_GPIO_Port, FUNKY_PB_Pin);
-	fEC1 = !HAL_GPIO_ReadPin(FUNKY_EC1_GPIO_Port, FUNKY_EC1_Pin);
-	fEC2 = !HAL_GPIO_ReadPin(FUNKY_EC2_GPIO_Port, FUNKY_EC2_Pin);
-
-	static uint8_t usbReportBuff[APP_USB_REPORT_SIZE];
-
-	usbReportBuff[0] = 	pinState  << 0 |
-								fA  << 1 |
-								fB  << 2 |
-								fC  << 3 |
-								fD  << 4 |
-								fPB  << 5 |
-								fEC1  << 6 |
-								fEC2  << 7 ;
-	usbReportBuff[1] = 	255;
-	usbReportBuff[2] = 	255;
-	usbReportBuff[3] = 	255;
-
-
-	// Send report
-	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)usbReportBuff, APP_USB_REPORT_SIZE);
-
-	HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
@@ -239,38 +164,35 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : FUNKY_D_Pin FUNKY_EC1_Pin */
-  GPIO_InitStruct.Pin = FUNKY_D_Pin|FUNKY_EC1_Pin;
+  /*Configure GPIO pins : EP_Pin FUNKY_D_Pin FUNKY_EC1_Pin */
+  GPIO_InitStruct.Pin = EP_Pin|FUNKY_D_Pin|FUNKY_EC1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FUNKY_EC2_Pin FUNKY_B_Pin FUNKY_PB_Pin FUNKY_A_Pin
-                           PA6 */
+                           EC8_Pin EC7_Pin EC4_Pin EC3_Pin
+                           SW1_Pin SW2_Pin */
   GPIO_InitStruct.Pin = FUNKY_EC2_Pin|FUNKY_B_Pin|FUNKY_PB_Pin|FUNKY_A_Pin
-                          |GPIO_PIN_6;
+                          |EC8_Pin|EC7_Pin|EC4_Pin|EC3_Pin
+                          |SW1_Pin|SW2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PB12 PB13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
+  /*Configure GPIO pins : LED1_Pin LED2_Pin */
+  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB5 PB6 FUNKY_C_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|FUNKY_C_Pin;
+  /*Configure GPIO pins : EC2_Pin EC1_Pin EC10_Pin EC9_Pin
+                           EC6_Pin EC5_Pin FUNKY_C_Pin */
+  GPIO_InitStruct.Pin = EC2_Pin|EC1_Pin|EC10_Pin|EC9_Pin
+                          |EC6_Pin|EC5_Pin|FUNKY_C_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);

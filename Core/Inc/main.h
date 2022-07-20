@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,8 +41,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
-#define APP_USB_REPORT_SIZE 			4
 
 /* USER CODE END EC */
 
@@ -59,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define EP_Pin GPIO_PIN_13
+#define EP_GPIO_Port GPIOC
 #define FUNKY_D_Pin GPIO_PIN_14
 #define FUNKY_D_GPIO_Port GPIOC
 #define FUNKY_EC1_Pin GPIO_PIN_15
@@ -71,6 +71,34 @@ void Error_Handler(void);
 #define FUNKY_PB_GPIO_Port GPIOA
 #define FUNKY_A_Pin GPIO_PIN_3
 #define FUNKY_A_GPIO_Port GPIOA
+#define EC8_Pin GPIO_PIN_4
+#define EC8_GPIO_Port GPIOA
+#define EC7_Pin GPIO_PIN_5
+#define EC7_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_12
+#define LED1_GPIO_Port GPIOB
+#define LED2_Pin GPIO_PIN_13
+#define LED2_GPIO_Port GPIOB
+#define EC2_Pin GPIO_PIN_14
+#define EC2_GPIO_Port GPIOB
+#define EC1_Pin GPIO_PIN_15
+#define EC1_GPIO_Port GPIOB
+#define EC4_Pin GPIO_PIN_8
+#define EC4_GPIO_Port GPIOA
+#define EC3_Pin GPIO_PIN_9
+#define EC3_GPIO_Port GPIOA
+#define SW1_Pin GPIO_PIN_10
+#define SW1_GPIO_Port GPIOA
+#define SW2_Pin GPIO_PIN_15
+#define SW2_GPIO_Port GPIOA
+#define EC10_Pin GPIO_PIN_3
+#define EC10_GPIO_Port GPIOB
+#define EC9_Pin GPIO_PIN_4
+#define EC9_GPIO_Port GPIOB
+#define EC6_Pin GPIO_PIN_5
+#define EC6_GPIO_Port GPIOB
+#define EC5_Pin GPIO_PIN_6
+#define EC5_GPIO_Port GPIOB
 #define FUNKY_C_Pin GPIO_PIN_8
 #define FUNKY_C_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
