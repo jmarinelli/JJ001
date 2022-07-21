@@ -75,6 +75,18 @@ void Error_Handler(void);
 #define EC8_GPIO_Port GPIOA
 #define EC7_Pin GPIO_PIN_5
 #define EC7_GPIO_Port GPIOA
+#define R5_Pin GPIO_PIN_6
+#define R5_GPIO_Port GPIOA
+#define R4_Pin GPIO_PIN_7
+#define R4_GPIO_Port GPIOA
+#define R3_Pin GPIO_PIN_0
+#define R3_GPIO_Port GPIOB
+#define R2_Pin GPIO_PIN_1
+#define R2_GPIO_Port GPIOB
+#define R1_Pin GPIO_PIN_10
+#define R1_GPIO_Port GPIOB
+#define C1_Pin GPIO_PIN_11
+#define C1_GPIO_Port GPIOB
 #define LED1_Pin GPIO_PIN_12
 #define LED1_GPIO_Port GPIOB
 #define LED2_Pin GPIO_PIN_13
@@ -99,8 +111,12 @@ void Error_Handler(void);
 #define EC6_GPIO_Port GPIOB
 #define EC5_Pin GPIO_PIN_6
 #define EC5_GPIO_Port GPIOB
+#define C2_Pin GPIO_PIN_7
+#define C2_GPIO_Port GPIOB
 #define FUNKY_C_Pin GPIO_PIN_8
 #define FUNKY_C_GPIO_Port GPIOB
+#define R6_Pin GPIO_PIN_9
+#define R6_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

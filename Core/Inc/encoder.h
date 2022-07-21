@@ -40,11 +40,6 @@ typedef struct
 	uint8_t* pinB;
 	uint8_t lastStateA;
 	uint8_t lastStateB;
-
-	ENC_RotaryState lastStep;
-	uint8_t stepDivider;
-	uint8_t stepCounter;
-	uint16_t stepTimeout;
 } ENC_RotHandler;
 
 

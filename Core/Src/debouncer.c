@@ -9,10 +9,10 @@
 #include "debouncer.h"
 
 uint32_t DEB_lastUpdateTime[100];
-uint8_t DEB_time[100] = { DEBOUNCE_TIME };
+uint32_t DEB_time[100] = { DEBOUNCE_TIME };
 
 
-void DEB_SetTime(uint8_t array_index, uint8_t time)
+void DEB_SetTime(uint8_t array_index, uint32_t time)
 {
 	DEB_time[array_index] = time;
 }

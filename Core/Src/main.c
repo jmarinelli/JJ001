@@ -164,7 +164,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, C1_Pin|LED1_Pin|LED2_Pin|C2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : EP_Pin FUNKY_D_Pin FUNKY_EC1_Pin */
   GPIO_InitStruct.Pin = EP_Pin|FUNKY_D_Pin|FUNKY_EC1_Pin;
@@ -173,28 +173,37 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FUNKY_EC2_Pin FUNKY_B_Pin FUNKY_PB_Pin FUNKY_A_Pin
-                           EC8_Pin EC7_Pin EC4_Pin EC3_Pin
-                           SW1_Pin SW2_Pin */
+                           EC8_Pin EC7_Pin R5_Pin R4_Pin
+                           EC4_Pin EC3_Pin SW1_Pin SW2_Pin */
   GPIO_InitStruct.Pin = FUNKY_EC2_Pin|FUNKY_B_Pin|FUNKY_PB_Pin|FUNKY_A_Pin
-                          |EC8_Pin|EC7_Pin|EC4_Pin|EC3_Pin
-                          |SW1_Pin|SW2_Pin;
+                          |EC8_Pin|EC7_Pin|R5_Pin|R4_Pin
+                          |EC4_Pin|EC3_Pin|SW1_Pin|SW2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : R3_Pin R2_Pin R1_Pin EC2_Pin
+                           EC1_Pin EC10_Pin EC9_Pin EC6_Pin
+                           EC5_Pin FUNKY_C_Pin R6_Pin */
+  GPIO_InitStruct.Pin = R3_Pin|R2_Pin|R1_Pin|EC2_Pin
+                          |EC1_Pin|EC10_Pin|EC9_Pin|EC6_Pin
+                          |EC5_Pin|FUNKY_C_Pin|R6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : C1_Pin C2_Pin */
+  GPIO_InitStruct.Pin = C1_Pin|C2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED1_Pin LED2_Pin */
   GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : EC2_Pin EC1_Pin EC10_Pin EC9_Pin
-                           EC6_Pin EC5_Pin FUNKY_C_Pin */
-  GPIO_InitStruct.Pin = EC2_Pin|EC1_Pin|EC10_Pin|EC9_Pin
-                          |EC6_Pin|EC5_Pin|FUNKY_C_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }

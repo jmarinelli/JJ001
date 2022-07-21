@@ -14,113 +14,29 @@ void ENC_Init(ENC_RotHandler *rot)
 	rot->reportState = ROT_REP_IDLE;
 	rot->hwState = ROT_IDLE;
 	rot->msCounter = 0;
-	rot->stepCounter = 0;
-	rot->stepTimeout = 0;
-
-	if(rot->stepDivider != 2 && rot->stepDivider != 4) rot->stepDivider = 1;
 }
 
 void ENC_Process(ENC_RotHandler *rot){
 	uint8_t encA, encB;
-	ENC_RotaryState dir = 0;
-
 
 	// Get encoder current state
 	encA = *(rot->pinA);
 	encB = *(rot->pinB);
 
-	// Check step
-	if(encA != rot->lastStateA || encB != rot->lastStateB)
-	{
-		if(rot->lastStateA == 0 && rot->lastStateB == 0)
-		{
-			if(encA == 1 && encB == 0)
-			{
-				dir = ROT_CW;
-			}
-			else
-			{
-				dir = ROT_CCW;
-			}
-		}
-		else if(rot->lastStateA == 0 && rot->lastStateB == 1)
-		{
-			if(encA == 0 && encB == 0)
-			{
-				dir = ROT_CW;
-			}
-			else
-			{
-				dir = ROT_CCW;
-			}
-		}
-		else if(rot->lastStateA == 1 && rot->lastStateB == 1)
-		{
-			if(encA == 0 && encB == 1)
-			{
-				dir = ROT_CW;
-			}
-			else
-			{
-				dir = ROT_CCW;
-			}
-		}
-		else
-		{
-			if(encA == 1 && encB == 1)
-			{
-				dir = ROT_CW;
-			}
-			else
-			{
-				dir = ROT_CCW;
-			}
-		}
+	if(encA && !encB && rot->hwState == ROT_IDLE){
+		rot->hwState  = ROT_CW;
+	}else if(!encA && encB && rot->hwState  == ROT_IDLE){
+		rot->hwState  = ROT_CCW;
+	}else if(!encA && !encB && rot->hwState  == ROT_CW && rot->hwState != ROT_WAIT_TO_RESET){
+		rot->toReport = ROT_CW;
+		rot->hwState  = ROT_WAIT_TO_RESET;
+	}else if(!encA && !encB && rot->hwState  == ROT_CCW && rot->hwState != ROT_WAIT_TO_RESET){
+		rot->toReport = ROT_CCW;
+		rot->hwState  = ROT_WAIT_TO_RESET;
+	}else if(encA && encB){
+		rot->hwState = ROT_IDLE;
 	}
 
-	// If there was a step
-	if(dir > 0)
-	{
-		if(rot->stepCounter == 0 || rot->lastStep == dir)	// First step or same direction
-		{
-			rot->stepCounter++;
-			if(rot->stepCounter == rot->stepDivider)
-			{
-				// Reset values
-				rot->stepCounter = 0;
-				rot->lastStep = 0;
-				rot->stepTimeout = 0;
-
-				// Ready to report
-				rot->toReport = dir;
-			}
-			else
-			{
-				rot->stepTimeout = APP_ROT_STEP_TIMEOUT_MS;
-				rot->lastStep = dir;
-			}
-		}
-		else // Other direction than last step
-		{
-			rot->lastStep = dir;
-			rot->stepCounter = 1;
-		}
-	}
-
-	//Check step timeout
-	if(rot->stepTimeout > 0)
-	{
-		rot->stepTimeout--;
-
-		// Reset step if timeout reached
-		if(rot->stepTimeout == 0)
-		{
-			rot->stepCounter = 0;
-			rot->lastStep = 0;
-		}
-	}
-
-	// Reporting
 	if(rot->reportState == ROT_REP_IDLE && rot->toReport > 0){
 		if(rot->toReport == ROT_CW) rot->reportState = ROT_REP_PUSH_CW;
 		if(rot->toReport == ROT_CCW) rot->reportState = ROT_REP_PUSH_CCW;
@@ -138,10 +54,6 @@ void ENC_Process(ENC_RotHandler *rot){
 			}
 		}
 	}
-
-	// Save current pin state
-	rot->lastStateA = encA;
-	rot->lastStateB = encB;
 }
 
 ENC_RotaryReportState ENC_GetState(ENC_RotHandler *rot)

@@ -8,6 +8,11 @@
 
 #include "app.h"
 #include "debouncer.h"
+#include "encoder.h"
+#include "button_matrix.h"
+
+#include "usb_device.h"
+#include "usbd_customhid.h"
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -70,17 +75,12 @@ uint8_t APP_inputState[TOTAL_INPUTS];
 uint8_t APP_inputDebounced[TOTAL_INPUTS];
 
 // Encoders
-ENC_RotHandler APP_encoderA = { .pinA = &(APP_inputDebounced[12]), .pinB = &(APP_inputDebounced[13]), .stepDivider = 1  };
-ENC_RotHandler APP_encoderB = { .pinA = &(APP_inputDebounced[14]), .pinB = &(APP_inputDebounced[15]), .stepDivider = 1  };
-ENC_RotHandler APP_encoderC = { .pinA = &(APP_inputDebounced[16]), .pinB = &(APP_inputDebounced[17]), .stepDivider = 1  };
-ENC_RotHandler APP_encoderD = { .pinA = &(APP_inputDebounced[18]), .pinB = &(APP_inputDebounced[19]), .stepDivider = 1  };
-ENC_RotHandler APP_encoderE = { .pinA = &(APP_inputDebounced[20]), .pinB = &(APP_inputDebounced[21]), .stepDivider = 1  };
-ENC_RotHandler APP_encoderF = { .pinA = &(APP_inputDebounced[28]), .pinB = &(APP_inputDebounced[29]), .stepDivider = 1  };
-
-
-uint8_t APP_RotState[16];
-uint8_t APP_AdjustRotState[8];
-uint8_t APP_AdjustRotState_last[8];
+ENC_RotHandler APP_encoderA = { .pinA = &(APP_inputDebounced[12]), .pinB = &(APP_inputDebounced[13]) };
+ENC_RotHandler APP_encoderB = { .pinA = &(APP_inputDebounced[14]), .pinB = &(APP_inputDebounced[15]) };
+ENC_RotHandler APP_encoderC = { .pinA = &(APP_inputDebounced[16]), .pinB = &(APP_inputDebounced[17]) };
+ENC_RotHandler APP_encoderD = { .pinA = &(APP_inputDebounced[18]), .pinB = &(APP_inputDebounced[19]) };
+ENC_RotHandler APP_encoderE = { .pinA = &(APP_inputDebounced[20]), .pinB = &(APP_inputDebounced[21]) };
+ENC_RotHandler APP_encoderF = { .pinA = &(APP_inputDebounced[28]), .pinB = &(APP_inputDebounced[29]) };
 
 uint8_t APP_EnableTask = 0;
 
@@ -92,6 +92,9 @@ void APP_Init(void)
     // Light up leds
 	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1);
 	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, 1);
+
+	// Init button matrix inputs
+	BMX_Init(APP_inputState);
 
 	// Init encoders
 	DEB_SetTime(12,50);
@@ -140,6 +143,8 @@ void APP_1msTask(void)
 
 		APP_ReadInputs();
 
+		BMX_Check();
+
 		DEB_DebounceArray(APP_inputDebounced, APP_inputState, TOTAL_INPUTS);
 
 		ENC_Process(&APP_encoderA);
@@ -176,8 +181,8 @@ void APP_UsbReport(void)
 						(ENC_GetState(&APP_encoderB) == ROT_REP_PUSH_CW)   << 6 | // APP_inputState[14]  << 6 |
 						(ENC_GetState(&APP_encoderB) == ROT_REP_PUSH_CCW)  << 7 ; // APP_inputState[15]  << 7 |
 
-	usbReportBuff[2] = 	(ENC_GetState(&APP_encoderC) == ROT_REP_PUSH_CW)   << 0 | // APP_inputState[16]  << 5 |
-						(ENC_GetState(&APP_encoderC) == ROT_REP_PUSH_CCW)  << 1 | // APP_inputState[17]  << 5 |
+	usbReportBuff[2] = 	(ENC_GetState(&APP_encoderC) == ROT_REP_PUSH_CW)   << 0 | // APP_inputState[16]  << 0 |
+						(ENC_GetState(&APP_encoderC) == ROT_REP_PUSH_CCW)  << 1 | // APP_inputState[17]  << 1 |
 						(ENC_GetState(&APP_encoderD) == ROT_REP_PUSH_CW)   << 2 |
 						(ENC_GetState(&APP_encoderD) == ROT_REP_PUSH_CCW)  << 3 |
 						(ENC_GetState(&APP_encoderE) == ROT_REP_PUSH_CW)   << 4 |
@@ -189,9 +194,9 @@ void APP_UsbReport(void)
 						APP_inputDebounced[25]  << 1 |
 						APP_inputDebounced[26]  << 2 |
 						APP_inputDebounced[27]  << 3 |
-						(ENC_GetState(&APP_encoderF) == ROT_REP_PUSH_CW)   << 4 | // APP_inputState[28]  << 5 |
+						(ENC_GetState(&APP_encoderF) == ROT_REP_PUSH_CW)   << 4 | // APP_inputState[28]  << 4 |
 						(ENC_GetState(&APP_encoderF) == ROT_REP_PUSH_CCW)  << 5 | // APP_inputState[29]  << 5 |
-						APP_inputDebounced[30]  << 6 |
+						(APP_inputDebounced[30] && !(APP_inputDebounced[24] || APP_inputDebounced[25] || APP_inputDebounced[26] || APP_inputDebounced[27]))  << 6 |
 						APP_inputDebounced[31]  << 7 ;
 
 
@@ -209,7 +214,7 @@ void APP_UsbReport(void)
 	// Check if USB report failed to many times
 	if(APP_usbFailsCounter > APP_USB_FAIL_LIMIT)
 	{
-		USBD_CUSTOM_HID_ResetState(&hUsbDeviceFS);
+		//USBD_CUSTOM_HID_ResetState(&hUsbDeviceFS);
 		APP_usbFailsCounter = 0;
 	}
 }
